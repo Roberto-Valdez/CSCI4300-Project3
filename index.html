@@ -14,3 +14,108 @@
         </form>
     </body>
 </html>
+import mysql.connector
+from pprint import pprint
+import json
+import decimal
+
+creds = { 'user' : 'FOO',
+          'database' : 'classicmodels',
+          'password' : 'FOOp4ss$',
+          'auth_plugin' : 'mysql_native_password'}
+
+
+def application (env, start_response):
+    if env['REQUEST_METHOD'] == 'GET':
+        start_response('200 OK', [('Content-Type', 'application/json')])
+        body = env['QUERY_STRING']
+        id = body.split('=')[-1]
+        id = int(id)
+
+        cnx = mysql.connector.connect(**creds)
+
+        cursor = cnx.cursor(dictionary=True)
+
+        cursor.execute('SELECT customers.salesRepEmployeeNumber AS employeeNumber, orderdetails.orderNumber, productCode, quantityOrdered, priceEach, quantityOrdered*priceEach as total FROM customers JOIN orders ON customers.customerNumber = orders.customerNumber JOIN orderdetails ON orders.orderNumber = orderdetails.orderNumber WHERE customers.salesRepEmployeeNumber = id;')
+
+        values = cursor.fetchall()
+
+        def decimal_default(obj):
+            if isinstance(obj, decimal.Decimal):
+                return float(obj)
+            raise TypeError
+
+#        html = open("jq5.html")
+#        return html.read()
+       
+        return(json.dumps(values, default=decimal_default))
+
+
+<!DOCTYPE html>
+<!-- https://jsonplaceholder.typicode.com -->
+<!-- http://cobweb.cs.uga.edu/~scott/4300/js/jq5.html -->
+<!--
+<script src="http://cobweb.cs.uga.edu/~scott/4300/js/jquery-3.4.1.js"></script>-->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="bootstrap-4.3.1-dist/css/bootstrap.css">
+
+        <title>Document</title>
+
+    </head>
+    <body>
+        <div class="container">
+            <form action="" method="POST" name="input">
+                <input type="text" name="id">
+                <input type="submit" value="Get Data!" onclick="btnClick()">
+            </form>
+            <table class="table" id="posts">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Product Code</th>
+                        <th>Quantity Ordered</th>
+                        <th>Price Each</th>
+                        <th>Total</th>
+                        <th>Employee Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+
+                <script src="jquery-3.4.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="bootstrap-4.3.1-dist/js/bootstrap.js"></script>
+
+        <script>
+          // our code goes here!
+            function btnClick() {
+                $.getJSON("172.17.152.44/sales/", processData);
+            }
+
+            function processData(result) {
+                $.each(result, function(i, item) {
+                    $("#posts").append([
+                        $("<tr>")
+                            .append("<td>" + item.orderNumber + "</td>")
+                            .append("<td>" + item.productCode + "</td>")
+                            .append("<td>" + item.quantityOrdered + "</td>")
+                            .append("<td>" + item.priceEach + "</td>")
+                            .append("<td>" + item.total + "</td>")
+                            .append("<td>" + item.employeeNumber + "</td>")
+
+                    ]);
+                })
+            }
+        </script>
+    </body>
+</html>
+
+
+
