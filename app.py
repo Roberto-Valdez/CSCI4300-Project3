@@ -12,9 +12,9 @@ mysql = MySQL(app)
 @app.route("/p3/", methods=['GET', 'POST'])
 def index():
     print("test1")
-    if request.method == 'GET': #CHANGED FROM POST                                                                                                                                
-        #employeeID = request.form                                                                                                                                                
-        #id = employeeID['employeeID'] #stores desired employeeID to be used in the mysql query later                                                                             
+    if request.method == 'POST':                                                                                                                               
+        employeeID = request.form                                                                                                                                                
+        id = employeeID['employeeID'] #stores desired employeeID to be used in the mysql query later                                                                             
         cur = mysql.connection.cursor()
         tableResults = cur.execute("SELECT employeeNumber, orderdetails.orderNumber, quantityOrdered*priceEach AS Sales FROM customers JOIN orders ON customers.customerNumber = \
 orders.customerNumber JOIN orderdetails ON orders.orderNumber = orderdetails.orderNumber JOIN employees ON employees.employeeNumber = customers.salesRepEmployeeNumber;") #insert\
