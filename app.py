@@ -21,12 +21,12 @@ orders.customerNumber JOIN orderdetails ON orders.orderNumber = orderdetails.ord
  query here and use where id = employeeID from up above                                                                                                                           
         print("test2")
         if tableResults > 0:  #check to see if there are results associated with the employeeID number                                                                            
-            row_headers = [x[0] for x in cur.description]
+            rows = [x[0] for x in cur.description]
             tableDetails = cur.fetchall()
-            json_data = []
+            json = []
             for result in tableDetails:
-                json_data.append(dict(zip(row_headers,result)))
-            jsonString = json.dumps(json_data) #returns json data, still need to figure out how to link to HTML and possibly parse using jQuery.getJSON() functions               
+                json_data.append(dict(zip(rows,result)))
+            jsonString = json.dumps(json) #returns json data, still need to figure out how to link to HTML and possibly parse using jQuery.getJSON() functions                    
             print(jsonString)
             print("test3")
 
@@ -34,4 +34,5 @@ orders.customerNumber JOIN orderdetails ON orders.orderNumber = orderdetails.ord
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
